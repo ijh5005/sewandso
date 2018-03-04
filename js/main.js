@@ -6,14 +6,15 @@ $(document).ready(() => {
 
 var app = angular.module('app', []);
 
-app.controller('ctrl', ['$rootScope', '$scope', '$interval', 'animation', 'task', 'data', function($rootScope, $scope, $interval, animation, task, data){
+app.controller('ctrl', ['$rootScope', '$scope', '$interval', '$timeout', 'animation', 'task', 'data', function($rootScope, $scope, $interval, $timeout, animation, task, data){
   $scope.products = data.products;
-  $rootScope.itemTracker = 0;
+  $scope.navigations = data.navigation;
   $rootScope.cartQuantity = 0;
   $rootScope.individualItemsInShoppingCart = [];
   $rootScope.shoppingCartItems = [];
   $rootScope.uniqueItemIDs = [];
   $rootScope.cartIndex = 0;
+  $scope.shoppingCartTotal = task.getShoppingCartTotal();
   $scope.incrementCartItem = (item) => {
     task.increment(item);
   }
@@ -23,21 +24,26 @@ app.controller('ctrl', ['$rootScope', '$scope', '$interval', 'animation', 'task'
   $scope.removeItemFromShoppingCart = (item) => {
     task.removeItemFromShoppingCart(item);
   }
-
   $scope.toggleCloseView = (open) => {
     const left = (open === true) ? '0%' : '100%';
     $('#closeViewer').css('left', left);
   }
   $scope.addToCart = (data, product, e) => {
-    $rootScope.itemTracker++;
-    const uniqueID = product.img + $rootScope.itemTracker;
-    animation.addToCart(data, product, uniqueID);
+    // const timeStamp = Math.random(0, 1);
+    const timeStamp = new Date();
+    animation.addToCart(data, product, timeStamp);
+  }
+  $scope.goTo = (pageID) => {
+    animation.page(pageID);
   }
   task.keepUpdated();
+  $timeout(() => {
+    $('p[data=HOME]').addClass('active');
+  })
 }]);
 
-app.service('animation', function($rootScope, task){
-  this.addToCart = (data, product, uniqueID) => {
+app.service('animation', function($rootScope, data, task){
+  this.addToCart = (data, product, timeStamp) => {
     $rootScope.clickTracker++;
     // const tracker = $rootScope.clickTracker + product.img;
     const $productContainer = $('.itemContainer[data="' + data + '"]');
@@ -79,7 +85,7 @@ app.service('animation', function($rootScope, task){
     const animation2 = { top: inBag, opacity: 0 }
     const options2  = { complete: function(){
       const item = { name: product.name, img: product.img, price: product.price}
-      task.addToShoppingCart(item, uniqueID);
+      task.addToShoppingCart(item, timeStamp);
     }}
     const complete = () => {
       $clone.animate(animation2, options2);
@@ -87,9 +93,20 @@ app.service('animation', function($rootScope, task){
     const options = { duration: 1000, complete }
     $clone.animate(animation, options);
   }
+  this.page = (pageID) => {
+    data.navigation.map((id) => {
+      if(id !== pageID){
+        $('div[data-page=' + id + ']').addClass('none');
+        $('p[data=' + id + ']').removeClass('active');
+      }
+    })
+    $('div[data-page=' + pageID + ']').removeClass('none');
+    $('p[data=' + pageID + ']').addClass('active');
+  }
 });
 
 app.service('data', function(){
+  this.navigation = ['HOME', 'SHOP', 'LESSONS', 'CONTACT', 'CART'];
   this.products = [
     {
       name: "SWAG",
@@ -148,7 +165,6 @@ app.service('task', function($rootScope, $interval, $timeout){
     let arrayIndex;
     const index = this.findIndexInArrayByIndex(item.index, $rootScope.shoppingCartItems);
     $rootScope.shoppingCartItems[index].quantity--;
-    $rootScope.itemTracker--;
     if($rootScope.shoppingCartItems[index].quantity === 0){
       $rootScope.shoppingCartItems.splice(index, 1);
       $rootScope.individualItemsInShoppingCart.map((img, i) => {
@@ -163,7 +179,6 @@ app.service('task', function($rootScope, $interval, $timeout){
   this.increment = (item) => {
     const index = this.findIndexInArrayByIndex(item.index, $rootScope.shoppingCartItems);
     $rootScope.shoppingCartItems[index].quantity++;
-    $rootScope.itemTracker++;
     this.adjustCartQuantity();
   }
   this.findIndexInArrayByIndex = (index, parentArray) => {
@@ -184,10 +199,10 @@ app.service('task', function($rootScope, $interval, $timeout){
     })
     return foundIndex;
   }
-  this.addToShoppingCart = (item, uniqueID) => {
-    const inCart = $rootScope.uniqueItemIDs.includes(uniqueID);
+  this.addToShoppingCart = (item, timeStamp) => {
+    const inCart = $rootScope.uniqueItemIDs.includes(timeStamp);
     if(inCart){ return null }
-    $rootScope.uniqueItemIDs.push(uniqueID);
+    $rootScope.uniqueItemIDs.push(timeStamp);
     const isInShoppingCart = $rootScope.individualItemsInShoppingCart.includes(item.img);
     if(isInShoppingCart){
       $rootScope.shoppingCartItems.map((shoppingCartItem) => {
@@ -222,7 +237,6 @@ app.service('task', function($rootScope, $interval, $timeout){
       }
     })
     $rootScope.individualItemsInShoppingCart.splice(arrayIndex, 1);
-    $rootScope.itemTracker -= quantity;
     this.adjustCartQuantity();
   }
   this.checkoutItemsTotal = () => {
@@ -248,6 +262,17 @@ app.service('task', function($rootScope, $interval, $timeout){
   this.keepUpdated = () => {
     $interval(() => {
       $rootScope.shoppingCartItems = $rootScope.shoppingCartItems;
+    })
+  }
+  this.getShoppingCartTotal = () => {
+    $interval(() => {
+      let total = 0;
+      $rootScope.shoppingCartItems.map((item) => {
+        const dollarSignIndex = item.price.indexOf('$');
+        const price = (dollarSignIndex === -1) ? item.price : item.price.slice(1);
+        total += parseFloat(item.quantity) * parseFloat(price);
+      })
+      $('button[type="submit"]').text('Total ' + total);
     })
   }
 });

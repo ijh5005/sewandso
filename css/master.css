@@ -17,6 +17,7 @@ body {
   --activeNavDark: #FF8989;
   --border: #bbb;
   --textColor: #555;
+  --placeHolder: #ffcccc;
 }
 
 .flexRow {
@@ -329,7 +330,7 @@ body {
 
 .addToCartBtn,
 .viewBtn {
-  border: 0.1em solid #111;
+  border: 0.01em solid #111;
   height: 3.2em;
   margin: 0.4em;
   opacity: 0;

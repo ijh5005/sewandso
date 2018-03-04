@@ -3,21 +3,97 @@
   <head>
     <meta charset="utf-8">
     <title>sew&so</title>
+    <link href="https://fonts.googleapis.com/css?family=Barlow+Condensed:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Italianno" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Muli:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link rel="stylesheet" href="./css/stripe.css">
+    <link rel="stylesheet" href="./css/landingPage.css">
     <link rel="stylesheet" href="./css/master.css">
     <script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
   </head>
   <body>
 
-    <!-- SHOPPING CAR -->
-    <div id="cart" class="">
-      <i class="fas fa-shopping-bag"></i>
-      <div id="cartAmount" class="flexRow"><p id="cartQuantity">0</p></div>
+    <!--        LANDING PAGE         -->
+    <div data-page='HOME' class="landingPage flexRow" ng-if="currentPage === 0">
+      <div id="background" class="flexRow">
+        <div id="rightSideB" class="flexCol">
+          <div id="rightSideBTop" class="flexRow">
+            <div id="rightSideBTopRight" class="flexCol">
+              <div id="rightSideBTopRightTop"></div>
+              <div id="rightSideBTopRightBottom"></div>
+            </div>
+            <div id="rightSideBTopLeft" class="flexCol">
+              <div id="rightSideBTopLeftTop"></div>
+              <div id="rightSideBTopLeftBottom"></div>
+            </div>
+          </div>
+          <div id="rightSideBBottom" class="flexRow">
+            <div id="rightSideBBottomLeft" class=""></div>
+            <div id="rightSideBBottomRight" class=""></div>
+          </div>
+        </div>
+        <div id="leftSideB" class="flexRow">
+          <div id="leftSideBLeft"></div>
+          <div id="leftSideBRight" class="flexCol">
+            <div id="leftSideBRightTop" class="flexRow">
+              <div id="leftSideBRightTopLeft" class="flexCol">
+                <div id="leftSideBRightTopLeftTop"></div>
+                <div id="leftSideBRightTopLeftBottom"></div>
+              </div>
+              <div id="leftSideBRightTopRight" class="flexCol">
+                <div id="leftSideBRightTopRightTop"></div>
+                <div id="leftSideBRightTopRightBottom"></div>
+              </div>
+            </div>
+            <div id="leftSideBRightBottom"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="homePageHolder" class="flexRow">
+        <div id="homePageLanding">
+          <div id="homePageTop" class="flexRow">
+            <div id="homePageTopLeft" class="flexCol">
+              <!-- <div id="homePageTopLeftTopBar"></div>
+              <div id="homePageTopLeftBottom" class="flexCol">
+                <div class="homePageIcons"><img src="./images/bagIcon.png" alt=""></div>
+                <div class="homePageIcons"><img src="./images/bedIcon.png" alt=""></div>
+                <div class="homePageIcons"><img src="./images/shoeIcon.png" alt=""></div>
+              </div> -->
+            </div>
+            <div id="homePageTopRight" class="pointer" ng-click='goTo("SHOP")'>
+              <div id="homePageTopRightTopBar" ng-click='goTo("SHOP")'></div>
+              <div id="homePageTopRightBottom" class="flexRow" ng-click='goTo("SHOP")'>
+                <p>Sew & So</p>
+              </div>
+            </div>
+          </div>
+          <div id="homePageBottom" class="flexRow">
+            <div id="homePageBottomLeft" class="flexCol">
+              <p class="firstp">SEWING LESSONS</p>
+              <p class="lastp">CROCHE LESSON</p>
+            </div>
+            <div id="homePageBottomRight" class="pointer">
+              <div id="previousBox">
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
+
     <!-- CONTAINER -->
-    <div id="container" class="flexCol" ng-app='app' ng-controller='ctrl' ng-cloak>
+    <div id="container" class="flexCol " ng-app='app' ng-controller='ctrl' ng-cloak>
+
+      <!-- SHOPPING CAR -->
+      <div data-page='SHOP' id="cart" class="none">
+        <i class="fas fa-shopping-bag"></i>
+        <div id="cartAmount" class="flexRow"><p id="cartQuantity">0</p></div>
+      </div>
 
       <!-- NAVIGATION BAR -->
       <div id="navigationBar" class="flexRow">
@@ -26,11 +102,7 @@
           <p>Sew & So</p>
         </div>
 
-        <p class="pointer">HOME</p>
-        <p class="pointer active">SHOP</p>
-        <p class="pointer">LESSONS</p>
-        <p class="pointer">CONTACT</p>
-        <p class="pointer">CART</p>
+        <p data={{navigation}} id={{navigation}} class="pointer" ng-repeat='navigation in navigations track by $index' ng-click='goTo(navigation)'>{{navigation}}</p>
 
       </div> <!-- end: NAVIGATION BAR -->
 
@@ -82,7 +154,8 @@
         <!-- SHOP -->
         <div id="shop" class="flexRow fullHeight">
 
-          <div data={{$index}} class="itemContainer pointer" ng-repeat='product in products track by $index'>
+          <!-- SHOP -->
+          <div data-page='SHOP' data={{$index}} class="itemContainer pointer none" ng-repeat='product in products track by $index'>
             <div class="itemContents fullSize itemImg">
               <img class="fullSize" src={{product.img}} alt="">
             </div>
@@ -105,20 +178,75 @@
                   <p>VIEW</p>
                 </div>
               </div>
-              <!-- <div class="itemIconBtns flexRow fullWidth">
-                <div class="btnIcon flexRow">
-                  <i class="fas fa-shopping-bag"></i>
-                </div>
-                <div class="btnIcon flexRow">
+            </div>
+          </div>
 
-                </div>
-                <div class="btnIcon flexRow">
+          <!-- CHECKOUT -->
+          <div data-page='CART' id="checkout" class="flexRow none">
 
-                </div>
-                <div class="btnIcon flexRow">
-                  <i class="fas fa-window-maximize"></i>
-                </div>
-              </div> -->
+            <div id="checkoutTotal" class="">
+
+            </div>
+
+            <div id="payForm" class="">
+              <div class="cell example example5">
+                <form action="/charge" method="post">
+                  <div id="example5-paymentRequest">
+                    <!--Stripe paymentRequestButton Element inserted here-->
+                  </div>
+                  <fieldset>
+                    <legend class="card-only" data-tid="elements_examples.form.pay_with_card">Pay with card</legend>
+                    <legend class="payment-request-available" data-tid="elements_examples.form.enter_card_manually">Or enter card details</legend>
+                    <div class="row">
+                      <div class="field">
+                        <label for="example5-name" data-tid="elements_examples.form.name_label">Name</label>
+                        <input id="example5-name" data-tid="elements_examples.form.name_placeholder" class="input" type="text" placeholder="Jane Doe" required="">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="field">
+                        <label for="example5-email" data-tid="elements_examples.form.email_label">Email</label>
+                        <input id="example5-email" data-tid="elements_examples.form.email_placeholder" class="input" type="text" placeholder="janedoe@gmail.com" required="">
+                      </div>
+                      <div class="field">
+                        <label for="example5-phone" data-tid="elements_examples.form.phone_label">Phone</label>
+                        <input id="example5-phone" data-tid="elements_examples.form.phone_placeholder" class="input" type="text" placeholder="(941) 555-0123" required="">
+                      </div>
+                    </div>
+                    <div data-locale-reversible>
+                      <div class="row">
+                        <div class="field">
+                          <label for="example5-address" data-tid="elements_examples.form.address_label">Address</label>
+                          <input id="example5-address" data-tid="elements_examples.form.address_placeholder" class="input" type="text" placeholder="185 Berry St" required="">
+                        </div>
+                      </div>
+                      <div class="row" data-locale-reversible>
+                        <div class="field">
+                          <label for="example5-city" data-tid="elements_examples.form.city_label">City</label>
+                          <input id="example5-city" data-tid="elements_examples.form.city_placeholder" class="input" type="text" placeholder="San Francisco" required="">
+                        </div>
+                        <div class="field">
+                          <label for="example5-state" data-tid="elements_examples.form.state_label">State</label>
+                          <input id="example5-state" data-tid="elements_examples.form.state_placeholder" class="input empty" type="text" placeholder="CA" required="">
+                        </div>
+                        <div class="field">
+                          <label for="example5-zip" data-tid="elements_examples.form.postal_code_label">ZIP</label>
+                          <input id="example5-zip" data-tid="elements_examples.form.postal_code_placeholder" class="input empty" type="text" placeholder="94107" required="">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="field">
+                        <label for="example5-card" data-tid="elements_examples.form.card_label">Card</label>
+                        <div id="example5-card" class="input"></div>
+                      </div>
+                    </div>
+                    <button type="submit" data-tid="elements_examples.form.pay_button"></button>
+                  </fieldset>
+                </form>
+
+              </div>
+
             </div>
           </div>
 

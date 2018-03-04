@@ -1,0 +1,346 @@
+/*LANDING PAGE*/
+#background {
+  align-items: flex-start;
+  background-color: #222;
+  height: 100vh;
+  justify-content: space-around;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  z-index: 1;
+}
+
+#rightSideB,
+#leftSideB {
+  align-items: flex-start;
+  height: 94%;
+  justify-content: space-between;
+  margin-top: 1%;
+  opacity: 0.4;
+  position: relative;
+  top: 1em;
+  width: 49.5%;
+}
+
+#leftSideBLeft {
+  background-color: #333;
+  height: 100%;
+  width: 35.5%;
+}
+
+#leftSideBRight {
+  height: 100%;
+  justify-content: space-between;
+  width: 63.5%;
+}
+
+#rightSideBTop {
+  height: 70.5%;
+  justify-content: space-between;
+  width: 100%;
+}
+
+#rightSideBBottom {
+  height: 28.5%;
+  justify-content: space-between;
+  width: 100%;
+}
+
+#rightSideBBottomLeft,
+#rightSideBBottomRight {
+  background-color: #333;
+  height: 100%;
+  width: 49.5%;
+}
+
+#rightSideBTopRight,
+#rightSideBTopLeft {
+  height: 100%;
+}
+
+#rightSideBTopRight {
+  justify-content: space-between;
+  width: 64.5%;
+}
+
+#rightSideBTopLeft {
+  justify-content: space-between;
+  width: 34.5%;
+}
+
+#rightSideBTopLeftTop,
+#rightSideBTopLeftBottom {
+  background-color: #333;
+  width: 100%;
+}
+
+#rightSideBTopLeftTop {
+  height: 64.5%;
+}
+
+#rightSideBTopLeftBottom {
+  height: 34.5%;
+}
+
+#rightSideBTopRightTop,
+#rightSideBTopRightBottom {
+  background-color: #333;
+  width: 100%;
+}
+
+#rightSideBTopRightTop {
+  height: 19.5%
+}
+
+#rightSideBTopRightBottom {
+  height: 79.5%;
+}
+
+#leftSideBRightTop,
+#leftSideBRightBottom {
+  width: 100%;
+
+}
+
+#leftSideBRightTop {
+  height: 69.5%;
+  justify-content: space-between;
+}
+
+#leftSideBRightBottom {
+  background-color: #333;
+  height: 29.5%;
+}
+
+#leftSideBRightTopLeft,
+#leftSideBRightTopRight {
+  height: 100%;
+  justify-content: space-between;
+  width: 49.2%;
+}
+
+#leftSideBRightTopLeftTop,
+#leftSideBRightTopLeftBottom,
+#leftSideBRightTopRightTop,
+#leftSideBRightTopRightBottom {
+  background-color: #333;
+  width: 100%;
+}
+
+#leftSideBRightTopLeftTop {
+  height: 14.5%;
+}
+
+#leftSideBRightTopLeftBottom {
+  height: 84.5%;
+}
+
+#leftSideBRightTopRightTop {
+  height: 59.5%;
+}
+
+#leftSideBRightTopRightBottom {
+  height: 39.5%;
+}
+
+#rightSideBTopRightTop,
+#rightSideBTopRightBottom,
+#rightSideBTopLeftTop,
+#rightSideBTopLeftBottom,
+#rightSideBBottomLeft,
+#leftSideBLeft,
+#rightSideBBottomRight,
+#leftSideBRightTopLeftTop,
+#leftSideBRightTopLeftBottom,
+#leftSideBRightTopRightTop,
+#leftSideBRightTopRightBottom,
+#leftSideBRightBottom {
+  background-size: 100% 100%;
+}
+
+#rightSideBTopRightTop {
+  background-image: url('../img/1.png');
+}
+#rightSideBTopRightBottom {
+  background-image: url('../img/2.png');
+}
+#rightSideBTopLeftTop {
+  background-image: url('../img/3.png');
+}
+#rightSideBTopLeftBottom {
+  background-image: url('../img/4.png');
+}
+#rightSideBBottomLeft {
+  background-image: url('../img/5.png');
+}
+#rightSideBBottomRight {
+  background-image: url('../img/6.png');
+}
+#leftSideBLeft {
+  background-image: url('../img/7.png');
+}
+#leftSideBRightTopLeftTop {
+  background-image: url('../img/8.png');
+}
+#leftSideBRightTopLeftBottom {
+  background-image: url('../img/9.png');
+}
+#leftSideBRightTopRightTop {
+  background-image: url('../img/10.png');
+}
+#leftSideBRightTopRightBottom {
+  background-image: url('../img/11.png');
+}
+#leftSideBRightBottom {
+  background-image: url('../img/12.png');
+}
+
+#homePageHolder {
+  /*align-items: flex-end;*/
+  font-family: 'Barlow Condensed', sans-serif;
+  height: 100vh;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  z-index: 2;
+}
+
+#homePageLanding {
+  -moz-box-shadow: 0px 60px 82px 32px rgba(0,0,0,0.75);
+  -webkit-box-shadow: 0px 60px 82px 32px rgba(0,0,0,1);
+  background-color: #000;
+  box-shadow: 0px 60px 82px 32px rgba(0,0,0,0.75);
+  height: 90vh;
+  min-width: 63em;
+}
+
+#homePageTop,
+#homePageBottom {
+  height: 50%;
+  opacity: 0.8;
+  width: 100%;
+}
+
+#homePageTop {
+  background-blend-mode: luminosity;
+  background-color: #ed7d7d;
+  background-image: url('../img/Picture2.png');
+  background-position: 146% 100%;
+  background-repeat: no-repeat;
+  background-size: 40em;
+  transition: background-position 0.5s, background-size 0.4s;
+  transition-timing-function: cubic-bezier(.41,-0.03,.22,1.48);
+}
+
+#homePageTop:hover {
+  background-position: 130% 100%;
+  background-size: 42.8em;
+}
+
+#homePageBottom {
+  background-blend-mode: luminosity;
+  background-color: #5b94ef;
+  background-image: url('../img/Picture1.png');
+  background-position: -1em 1em;
+  background-repeat: no-repeat;
+  background-size: 26em;
+  transition: background-position 0.5s, background-size 0.4s;
+  transition-timing-function: cubic-bezier(.41,-0.03,.22,1.48);
+}
+
+#homePageBottom:hover {
+  /*background-size: 28em;*/
+  /*background-position: 6em 1em;*/
+}
+
+#homePageTopLeft {
+  /* background-color: #fff; */
+  height: 100%;
+  justify-content: flex-start;
+  width: 25%;
+}
+
+#homePageTopLeftTopBar {
+  /*background-color: #aaa;*/
+  height: 0;
+  width: 100%;
+}
+
+#homePageTopLeftBottom {
+  /*background-color: #bbb;*/
+  height: 100%;
+  width: 14em;
+}
+
+.homePageIcons {
+  height: 6em;
+  margin: 0.4em;
+  width: 6em;
+}
+
+.homePageIcons img {
+  height: 100%;
+  width: 100%;
+}
+
+#homePageTopRight {
+  height: 100%;
+  width: 75%;
+}
+
+#homePageTopRightTopBar {
+  height: 4.8em;
+  width: 100%;
+}
+
+#homePageTopRightBottom {
+  height: 24em;
+  width: 34em;
+}
+
+#homePageTopRight:hover #homePageTopRightBottom p {
+  top: -0.20em;
+}
+
+#homePageTopRightBottom p {
+  color: #fff;
+  font-size: 6em;
+  font-weight: 100;
+  /*letter-spacing: -11.2px;*/
+  position: relative;
+  top: 0;
+  transition: top 0.4s;
+  transition-timing-function: cubic-bezier(.41,-0.03,.22,1.48);
+}
+
+#homePageBottomLeft {
+  height: 100%;
+  width: 35%;
+}
+
+#homePageBottomLeft p {
+  color: #fff;
+  font-size: 3.6em;
+  font-weight: 100;
+  left: 8em;
+  /*letter-spacing: -4px;*/
+  margin: 0;
+  position: relative;
+  transition: left 0.4s;
+  transition-timing-function: cubic-bezier(.41,-0.03,.22,1.48);
+}
+
+#homePageBottom:hover #homePageBottomLeft p.firstp {
+  left: 8.4em;
+}
+
+#homePageBottom:hover #homePageBottomLeft p.lastp {
+  left: 7.6em;
+}
+
+#homePageBottomRight {
+  height: 100%;
+  width: 65%;
+}
