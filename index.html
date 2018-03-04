@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>sew&so</title>
+    <link href="https://fonts.googleapis.com/css?family=Italianno" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Muli:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link rel="stylesheet" href="./css/master.css">
+    <script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
+  </head>
+  <body>
+
+    <!-- SHOPPING CAR -->
+    <div id="cart" class="">
+      <i class="fas fa-shopping-bag"></i>
+      <div id="cartAmount" class="flexRow"><p id="cartQuantity">0</p></div>
+    </div>
+
+    <!-- CONTAINER -->
+    <div id="container" class="flexCol" ng-app='app' ng-controller='ctrl' ng-cloak>
+
+      <!-- NAVIGATION BAR -->
+      <div id="navigationBar" class="flexRow">
+
+        <div id="logo">
+          <p>Sew & So</p>
+        </div>
+
+        <p class="pointer">HOME</p>
+        <p class="pointer active">SHOP</p>
+        <p class="pointer">LESSONS</p>
+        <p class="pointer">CONTACT</p>
+        <p class="pointer">CART</p>
+
+      </div> <!-- end: NAVIGATION BAR -->
+
+      <!-- HOMEPAGE -->
+      <div id="homePage" class="flexRow none">
+
+        <!-- <img class="fullSize" src="./img/home.png" alt=""> -->
+        <!-- <div data='1' class="homePageImg">
+          <img class="fullSize" src="./img/one.png" alt="">
+        </div>
+        <div data='2' class="homePageImg">
+          <img class="fullSize" src="./img/two.png" alt="">
+        </div>
+        <div data='3' class="homePageImg">
+          <img class="fullSize" src="./img/three.png" alt="">
+        </div>
+        <div data='4' class="homePageImg">
+          <img class="fullSize" src="./img/four.jpg" alt="">
+        </div> -->
+
+      </div> <!-- end: HOMEPAGE -->
+
+      <!-- SHOP SECTION -->
+      <div id="shopSection" class="flexRow ">
+
+        <!-- SIDEBAR -->
+        <div id="sideBar" class="fullHeight">
+
+          <div data={{$index}} class="itemBlock flexRow" ng-repeat='shoppingCartItem in shoppingCartItems track by $index'>
+            <div class="imgBlock fullHeight">
+              <img class="fullSize" src={{shoppingCartItem.img}} alt="">
+            </div>
+            <div class="costBlock flexCol">
+              <p>{{shoppingCartItem.price}}</p>
+              <p class="multiple">X</p>
+              <p class="">{{shoppingCartItem.quantity}}</p>
+            </div>
+            <div class="deleteBlock flexCol">
+              <p class="pointer" ng-click='removeItemFromShoppingCart(shoppingCartItem)'>remove</p>
+              <div class="quantityBtns flexRow">
+                <p class="pointer" ng-click='incrementCartItem(shoppingCartItem)'>+</p>
+                <p class="pointer" ng-click='decrementCartItem(shoppingCartItem)'>-</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SHOP -->
+        <div id="shop" class="flexRow fullHeight">
+
+          <div data={{$index}} class="itemContainer pointer" ng-repeat='product in products track by $index'>
+            <div class="itemContents fullSize itemImg">
+              <img class="fullSize" src={{product.img}} alt="">
+            </div>
+            <div class="moveToCartImg fullSize itemImg">
+              <img data={{$index}} class="fullSize" src={{product.img}} alt="">
+            </div>
+            <div class="itemContents flexCol fullSize itemDescription">
+              <div class="itemDescriptionTitle fullWidth flexRow">
+                <p>{{product.name}}</p>
+                <p>{{product.price}}</p>
+              </div>
+              <div class="itemDescriptionText flexCol">
+                <p>{{product.description}}</p>
+              </div>
+              <div class="itemBtns flexCol fullWidth">
+                <div data={{$index}} class="addToCartBtn flexRow" ng-click='addToCart($index, product, $event)'>
+                  <p>ADD TO CART</p>
+                </div>
+                <div class="viewBtn flexRow" ng-click='toggleCloseView(true)'>
+                  <p>VIEW</p>
+                </div>
+              </div>
+              <!-- <div class="itemIconBtns flexRow fullWidth">
+                <div class="btnIcon flexRow">
+                  <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="btnIcon flexRow">
+
+                </div>
+                <div class="btnIcon flexRow">
+
+                </div>
+                <div class="btnIcon flexRow">
+                  <i class="fas fa-window-maximize"></i>
+                </div>
+              </div> -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- CLOSE VIEW -->
+      <div id="closeViewer" class="fullSize">
+        <div class="" ng-click='toggleCloseView(false)'>
+          <p>back</p>
+        </div>
+      </div>
+    </div> <!-- end: CONTAINER -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script type="text/javascript" src="./js/main.js"></script>
+  </body>
+</html>
