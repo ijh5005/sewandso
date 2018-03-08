@@ -36,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //note from me: SET YOUR PAGES' ROUTES HERE. EACH PAGE HAS TO HAVE A DIFFERENT ROUTE
 app.use('/', index);
 app.use('/users', users);
+//app.use('/serverstatus', serverstatus);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
