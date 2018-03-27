@@ -1,278 +1,324 @@
 'use strict';
 
-$(document).ready(() => {
-  $('body').css('opacity', 1);
-})
-
 var app = angular.module('app', []);
 
-app.controller('ctrl', ['$rootScope', '$scope', '$interval', '$timeout', 'animation', 'task', 'data', function($rootScope, $scope, $interval, $timeout, animation, task, data){
-  $scope.products = data.products;
-  $scope.navigations = data.navigation;
+app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'animate', 'task', 'data', function($scope, $rootScope, $interval, $timeout, animate, task, data){
+  //ROOT VARIABLES
+  $rootScope.splashLoaderWidth = 0;
+  $rootScope.productGallerySmallImgs = [];
+  $rootScope.cartIDs = [];
+  $rootScope.cart = [];
   $rootScope.cartQuantity = 0;
-  $rootScope.individualItemsInShoppingCart = [];
-  $rootScope.shoppingCartItems = [];
-  $rootScope.uniqueItemIDs = [];
-  $rootScope.cartIndex = 0;
-  $scope.shoppingCartTotal = task.getShoppingCartTotal();
-  $scope.incrementCartItem = (item) => {
-    task.increment(item);
+  $rootScope.navigating = true;
+
+  //SCOPE VARIABLES
+  $scope.products = data.products;
+  $scope.showProductGallery = false;
+  $scope.navOptions = data.navOptions;
+  $scope.currentPage = 'HOME';
+
+  //METHODS
+  $scope.addToCartFromGallery = (index) => {
+    animate.addToCartFromGallery(data.products[index], index);
+    task.addToCart(data.products[index]);
+    $timeout(() => {
+      task.calculateCartQuantity();
+    }, 500)
   }
-  $scope.decrementCartItem = (item) => {
-    task.decrement(item);
+  $scope.addToCartFromProductView = () => {
+    task.addToCart($rootScope.productViewProduct);
+    $timeout(() => {
+      task.calculateCartQuantity();
+    })
   }
-  $scope.removeItemFromShoppingCart = (item) => {
-    task.removeItemFromShoppingCart(item);
+  $scope.toggleProductGallery = (index) => {
+    $scope.showProductGallery = !$scope.showProductGallery;
+    //wait for the ui to load to set the gallery info
+    $timeout(() => {
+      task.setProductGalleryData(data['products'][index]);
+      $rootScope.productViewProduct = data['products'][index];
+    })
   }
-  $scope.toggleCloseView = (open) => {
-    const left = (open === true) ? '0%' : '100%';
-    $('#closeViewer').css('left', left);
+  $scope.setLargerGalleryImg = (index) => {
+    task.setLargerGalleryImg($rootScope.productGallerySmallImgs[index]);
   }
-  $scope.addToCart = (data, product, e) => {
-    // const timeStamp = Math.random(0, 1);
-    const timeStamp = new Date();
-    animation.addToCart(data, product, timeStamp);
+  $scope.navigateTo = (navOption, index) => {
+    $('.navOptions').removeClass('active');
+    $('.navOptions[data="' + index + '"]').addClass('active');
+    $scope.currentPage = navOption;
+    if(navOption === 'CART'){
+      $timeout(() => {
+        runStripe();
+      })
+    }
   }
-  $scope.goTo = (pageID) => {
-    animation.page(pageID);
+  $scope.changeViewFrom = (view) => {
+    task.switchViews(view)
   }
-  task.keepUpdated();
-  $timeout(() => {
-    $('p[data=HOME]').addClass('active');
-  })
+
+  //INIT TASKS
+  task.startSplash(data.products);
+  task.assignIDsToProducts(data.products);
+  task.initalSetup();
 }]);
 
-app.service('animation', function($rootScope, data, task){
-  this.addToCart = (data, product, timeStamp) => {
-    $rootScope.clickTracker++;
-    // const tracker = $rootScope.clickTracker + product.img;
-    const $productContainer = $('.itemContainer[data="' + data + '"]');
-    const productContainerHeight = $productContainer.height();
-    const productContainerWidth = $productContainer.width();
-
-    //find target position
-    const cartPostion = $('#cart').position();
-    //shrink height and width
-    const height = '1.6em';
-    const width = '1.2em';
-
-    //add clone img to page
-    let movingImg = '';
-    movingImg += '<div class="cartImgHolder movingImg">';
-    movingImg += '<img src="' + product.img + '">';
-    movingImg += '</div>';
-    $('html').append(movingImg);
-
-    const selfPosition = $productContainer.offset();
-    //position clone img
-    const $clone = $('.movingImg');
+app.service('animate', function($rootScope, $interval, $timeout){
+  this.addToCartFromGallery = (product, index) => {
+    const $productBox = $('.productBox[data="' + index + '"]');
+    //get the location of the added item picture
+    const offset = $productBox.offset();
+    const left = offset.left;
+    const top = offset.top;
+    //get the width and height of the picture
+    const width = $productBox.width();
+    const height = $productBox.height();
+    //append a div to the body
+    $('body').append('<div class="clone"></div>');
+    //relocate the append div
+    const $clone = $('.clone');
     $clone.css('position', 'absolute')
-          .css('top', selfPosition.top)
-          .css('left', selfPosition.left)
-          .css('height', productContainerHeight)
-          .css('width', productContainerWidth)
-          .css('z-index', 10);
-
-    //if the shopping cart drop needs adjustments chang the dx and dy
-    const dx = 4;
-    const dy = -20;
-
-    const left = cartPostion.left + dx;
-    const top = cartPostion.top + dy;
-    const inBag = top + 20;
-
-    const animation = { left: left, top: top, height: height, width: width }
-    const animation2 = { top: inBag, opacity: 0 }
-    const options2  = { complete: function(){
-      const item = { name: product.name, img: product.img, price: product.price}
-      task.addToShoppingCart(item, timeStamp);
-    }}
-    const complete = () => {
-      $clone.animate(animation2, options2);
-    }
-    const options = { duration: 1000, complete }
-    $clone.animate(animation, options);
+          .css('top', top).css('left', left)
+          .css('backgroundImage', 'url(' + product.img + ')')
+          .css('backgroundSize', '100% 100%')
+          .css('zIndex', 20)
+          .css('transition', 'opacity 0.5s')
+          .height(height)
+          .width(width);
+    //get the position of the cart
+    const cartOffsetTop = $('#cartIcon').offset().top;
+    const cartOffsetLeft = $('#cartIcon').offset().left;
+    const shrinkSizeHeight = '1.4em';
+    const shrinkSizeWidth = '1em';
+    //move the div to the shopping cart
+    $clone.animate({
+      top: cartOffsetTop,
+      left: cartOffsetLeft,
+      height: shrinkSizeHeight,
+      width: shrinkSizeWidth
+    }, {
+      duration: 1000,
+      start: function(){
+        $timeout(() => {
+          $clone.css('opacity', 0);
+        }, 800)
+      },
+      complete: function(){
+        $clone.remove();
+      }
+    });
   }
-  this.page = (pageID) => {
-    data.navigation.map((id) => {
-      if(id !== pageID){
-        $('div[data-page=' + id + ']').addClass('none');
-        $('p[data=' + id + ']').removeClass('active');
+})
+
+app.service('task', function($rootScope, $interval, $timeout){
+  this.startSplash = (products) => {
+    //cacha the splash dom element
+    const $splash = $('#splash');
+    //if there exist no splah screen skip
+    if(!$splash.length){
+      return null;
+    }
+    //wait for UI to load
+    $timeout(() => {
+      //fade in the splash screen
+      $splash.css('opacity', 1);
+      //animate the loader
+      $rootScope.splashLoaderWidth = 100;
+    }, 250).then(() => {
+      $timeout(() => {
+        //change the body background-color to white
+        $('body').css('backgroundColor', '#fff');
+        //fadeout the splash screen
+        $splash.css('opacity', 0);
+        //display the home page
+        $('#container').removeClass('none');
+        $timeout(() => {
+          //remove the splash screen
+          $splash.hide();
+        }, 500);
+      }, 1500);
+    })
+  }
+  this.assignIDsToProducts = (products) => {
+    products.map((data, index) => {
+      data['id'] = index;
+    })
+  }
+  this.setProductGalleryData = (product) => {
+    //set larger img in product gallery
+    this.setLargerGalleryImg(product.img);
+    //set smaller imgs in product gallery
+    this.setSmallerGalleryImgs(product.galleryImgs);
+    //set product text
+    this.setProductGalleryText(product);
+  }
+  this.setLargerGalleryImg = (img) => {
+    document.getElementById('bigImgInGallery').style.backgroundImage = 'url("' + img + '")';
+  }
+  this.setSmallerGalleryImgs = (galleryImgs) => {
+    galleryImgs.map((img, index) => {
+      $rootScope.productGallerySmallImgs[index] = img;
+      document.getElementById('img' + index).style.backgroundImage = 'url("' + img + '")';
+    })
+  }
+  this.setProductGalleryText = (product) => {
+    const test = document.getElementById('descriptionName');
+    document.getElementById('descriptionName').innerText = product['name'];
+    document.getElementById('descriptionPrice').innerText = product['price'];
+    document.getElementById('descriptionDescription').innerText = product['description'];
+  }
+  this.addToCart = (product) => {
+    ($rootScope.cartIDs.includes(product.id)) ? this.addAnotherToCart(product) : this.addOnlyOneToCart(product);
+  }
+  this.addAnotherToCart = (product) => {
+    const id = product['id'];
+    $rootScope.cart.map((product, index) => {
+      if(product['id'] === id){
+        $rootScope.cart[index]['quantity']++;
       }
     })
-    $('div[data-page=' + pageID + ']').removeClass('none');
-    $('p[data=' + pageID + ']').addClass('active');
+  }
+  this.addOnlyOneToCart = (product) => {
+    $rootScope.cartIDs.push(product.id);
+    product['quantity'] = 1;
+    $rootScope.cart.push(product);
+  }
+  this.calculateCartQuantity = () => {
+    let quantity = 0;
+    $rootScope.cart.map((product) => {
+      quantity += parseInt(product.quantity);
+    })
+    $rootScope.cartQuantity = quantity;
+  }
+  this.initalSetup = () => {
+    //wait until the UI loads
+    $timeout(() => {
+      //set the inital navigation option
+      $('.navOptions[data="0"]').addClass('active');
+    })
+  }
+  this.switchViews = (view) => {
+    const addClassTo = (view === 'smallGalleryViewBox') ? '.smallGalleryViewBox' : '.largeGalleryViewBox';
+    const removeClassFrom = (view === 'smallGalleryViewBox') ? '.largeGalleryViewBox' : '.smallGalleryViewBox';
+    $(removeClassFrom).removeClass('activeView');
+    $(addClassTo).addClass('activeView');
   }
 });
 
 app.service('data', function(){
-  this.navigation = ['HOME', 'SHOP', 'LESSONS', 'CONTACT', 'CART'];
   this.products = [
     {
-      name: "SWAG",
-      img: "./img/item1.png",
-      "price": "$60",
-      description: "get you swag while it's hot"
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
     },
     {
-      name: "SWAG",
-      img: "./img/item2.png",
-      "price": "$60",
-      description: "get you swag while it's hot"
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
     },
     {
-      name: "SWAG",
-      img: "./img/item3.png",
-      "price": "$60",
-      description: "get you swag while it's hot"
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
     },
     {
-      name: "SWAG",
-      img: "./img/item4.png",
-      "price": "$60",
-      description: "get you swag while it's hot"
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
     },
     {
-      name: "SWAG",
-      img: "./img/item5.png",
-      "price": "$60",
-      description: "get you swag while it's hot"
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
     },
     {
-      name: "SWAG",
-      img: "./img/item6.png",
-      "price": "$60",
-      description: "get you swag while it's hot"
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
     },
     {
-      name: "SWAG",
-      img: "./img/item7.png",
-      "price": "$60",
-      description: "get you swag while it's hot"
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
     },
     {
-      name: "SWAG",
-      img: "./img/item8.png",
-      "price": "$60",
-      description: "get you swag while it's hot"
-    }
-  ]
-});
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
+    },
+    {
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
+    },
+    {
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
+    },
+    {
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
+    },
+    {
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
+    },
+    {
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
+    },
+    {
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
+    },
+    {
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
+    },
+    {
+      name: 'black and sexy',
+      price: '$45',
+      img: './img/fashion.png',
+      galleryImgs: ['./img/fashion.png', './img/fashion2.png', './img/fashion3.png', './img/fashion4.png'],
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ante elit, facilisis ut commodo eget, iaculis at nibh.'
+    },
 
-//task service
-app.service('task', function($rootScope, $interval, $timeout){
-  this.decrement = (item) => {
-    let arrayIndex;
-    const index = this.findIndexInArrayByIndex(item.index, $rootScope.shoppingCartItems);
-    $rootScope.shoppingCartItems[index].quantity--;
-    if($rootScope.shoppingCartItems[index].quantity === 0){
-      $rootScope.shoppingCartItems.splice(index, 1);
-      $rootScope.individualItemsInShoppingCart.map((img, i) => {
-        if(img === item.img){
-          arrayIndex = i;
-        }
-      })
-      $rootScope.individualItemsInShoppingCart.splice(arrayIndex, 1);
-    }
-    this.adjustCartQuantity();
-  }
-  this.increment = (item) => {
-    const index = this.findIndexInArrayByIndex(item.index, $rootScope.shoppingCartItems);
-    $rootScope.shoppingCartItems[index].quantity++;
-    this.adjustCartQuantity();
-  }
-  this.findIndexInArrayByIndex = (index, parentArray) => {
-    let foundIndex = 'not found';
-    parentArray.map((item, i) => {
-      if(item.index == index){
-        foundIndex = i;
-      }
-    })
-    return foundIndex;
-  }
-  this.findItemInArrayByIndex = (index, parentArray) => {
-    let foundIndex = 'not found';
-    parentArray.map((item, i) => {
-      if(item.index == index){
-        foundIndex = item;
-      }
-    })
-    return foundIndex;
-  }
-  this.addToShoppingCart = (item, timeStamp) => {
-    const inCart = $rootScope.uniqueItemIDs.includes(timeStamp);
-    if(inCart){ return null }
-    $rootScope.uniqueItemIDs.push(timeStamp);
-    const isInShoppingCart = $rootScope.individualItemsInShoppingCart.includes(item.img);
-    if(isInShoppingCart){
-      $rootScope.shoppingCartItems.map((shoppingCartItem) => {
-        if(shoppingCartItem.img === item.img){
-          shoppingCartItem.quantity++;
-        }
-      })
-    } else {
-      const img = item.img;
-      const price = item.price;
-      const name = item.name;
-      const imgObj = { name: name, img: img, price: price, quantity: 1, index: $rootScope.cartIndex }
-      $rootScope.cartIndex++;
-      $rootScope.shoppingCartItems.push(imgObj);
-      $rootScope.individualItemsInShoppingCart.push(img);
-    }
-    this.adjustCartQuantity();
-  }
-  this.adjustCartQuantity = () => {
-    $rootScope.cartQuantity = this.getTotalItemsInCart($rootScope.shoppingCartItems);
-    $('#cartQuantity').text($rootScope.cartQuantity);
-  }
-  this.removeItemFromShoppingCart = (item) => {
-    let arrayIndex;
-    let quantity;
-    const index = this.findIndexInArrayByIndex(item.index, $rootScope.shoppingCartItems);
-    $rootScope.shoppingCartItems.splice(index, 1);
-    $rootScope.individualItemsInShoppingCart.map((img, i) => {
-      if(img === item.img){
-        quantity = item.quantity;
-        arrayIndex = i;
-      }
-    })
-    $rootScope.individualItemsInShoppingCart.splice(arrayIndex, 1);
-    this.adjustCartQuantity();
-  }
-  this.checkoutItemsTotal = () => {
-    const calculateTotal = () => {
-      let total = 0;
-      $rootScope.shoppingCartItems.map((item) => {
-        const price = item.price.substring(1, item.price.length);
-        total += (parseInt(price) * parseInt(item.quantity));
-      })
-      $rootScope.checkoutItemsTotal = total;
-    }
-    $interval(() => {
-      calculateTotal();
-    })
-  }
-  this.getTotalItemsInCart = (shoppingCart) => {
-    let totalItems = 0;
-    shoppingCart.map((data) => {
-      totalItems += data.quantity;
-    })
-    return totalItems;
-  }
-  this.keepUpdated = () => {
-    $interval(() => {
-      $rootScope.shoppingCartItems = $rootScope.shoppingCartItems;
-    })
-  }
-  this.getShoppingCartTotal = () => {
-    $interval(() => {
-      let total = 0;
-      $rootScope.shoppingCartItems.map((item) => {
-        const dollarSignIndex = item.price.indexOf('$');
-        const price = (dollarSignIndex === -1) ? item.price : item.price.slice(1);
-        total += parseFloat(item.quantity) * parseFloat(price);
-      })
-      $('button[type="submit"]').text('Total ' + total);
-    })
-  }
+  ];
+  this.navOptions = ['HOME', 'ABOUT', 'SHOP', 'LESSONS', 'CONTACT', 'CART'];
 });

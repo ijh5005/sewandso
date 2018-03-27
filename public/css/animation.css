@@ -1,0 +1,53 @@
+#splash {
+  transition: opacity 0.5s;
+}
+
+.navOptions:hover,
+#navRightSide > *:hover {
+  color: var(--red);
+}
+
+#filterLeftSide .filterOption:hover > span {
+  color: var(--red);
+  opacity: 0.6;
+}
+
+#resetFilterBtn:hover {
+  color: var(--red);
+}
+
+#largeGalleryView:hover > .largeGalleryViewBox,
+#smallGalleryView:hover > .smallGalleryViewBox {
+  background-color: var(--red);
+  opacity: 0.6;
+}
+
+.activeView {
+  background-color: var(--red);
+  opacity: 0.6;
+}
+
+.productBox:hover > .productPriceBox {
+  opacity: 1;
+}
+
+.productBox:hover .productBtns {
+  z-index: 10;
+}
+
+#footer > *:hover {
+  color: var(--red);
+}
+
+.productBox:hover > .innerImg {
+  transform: scale(1.1) rotateZ(1deg);
+  opacity: 0.6;
+}
+
+.innerImg {
+  transition: all 0.5s;
+}
+
+.productBtns div:hover {
+  background-color: var(--redFade);
+}
