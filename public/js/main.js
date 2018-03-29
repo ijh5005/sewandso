@@ -9,7 +9,9 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'animat
   $rootScope.cartIDs = [];
   $rootScope.cart = [];
   $rootScope.cartQuantity = 0;
+  $rootScope.cartPrice = 0;
   $rootScope.navigating = true;
+  $rootScope.initallyLoaded = true;
 
   //SCOPE VARIABLES
   $scope.products = data.products;
@@ -23,12 +25,14 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'animat
     task.addToCart(data.products[index]);
     $timeout(() => {
       task.calculateCartQuantity();
+      task.calculateCartPrice();
     }, 500)
   }
   $scope.addToCartFromProductView = () => {
     task.addToCart($rootScope.productViewProduct);
     $timeout(() => {
       task.calculateCartQuantity();
+      task.calculateCartPrice();
     })
   }
   $scope.toggleProductGallery = (index) => {
@@ -55,11 +59,35 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'animat
   $scope.changeViewFrom = (view) => {
     task.switchViews(view)
   }
+  $scope.increment = (cartItem) => {
+    const index = task.findCartItemIndex(cartItem);
+    $rootScope.cart[index]['quantity']++;
+    task.calculateCartQuantity();
+    task.calculateCartPrice();
+  }
+  $scope.decrement = (cartItem) => {
+    const index = task.findCartItemIndex(cartItem);
+    const value = $rootScope.cart[index]['quantity'] - 1;
+    if(value === 0){
+      $rootScope.cartIDs.splice(index);
+      $rootScope.cart.splice(index, 1);
+    } else {
+      $rootScope.cart[index]['quantity']--;
+    }
+    task.calculateCartQuantity();
+    task.calculateCartPrice();
+  }
+  $scope.myFunction = () => {
+    console.log('hey');
+  }
+  $scope.nextAboutStory = () => {
+    task.nextAboutStory();
+  }
 
   //INIT TASKS
   task.startSplash(data.products);
   task.assignIDsToProducts(data.products);
-  task.initalSetup();
+  task.initalSetup($scope.loaded);
 }]);
 
 app.service('animate', function($rootScope, $interval, $timeout){
@@ -189,18 +217,51 @@ app.service('task', function($rootScope, $interval, $timeout){
     })
     $rootScope.cartQuantity = quantity;
   }
-  this.initalSetup = () => {
-    //wait until the UI loads
-    $timeout(() => {
-      //set the inital navigation option
-      $('.navOptions[data="0"]').addClass('active');
+  this.calculateCartPrice = () => {
+    let price = 0;
+    $rootScope.cart.map((product) => {
+      let multiple = product.quantity * parseFloat(product.price.slice(1));
+      price += multiple;
     })
+    $rootScope.cartPrice = price;
+  }
+  this.initalSetup = () => {
+    if($rootScope.initallyLoaded){
+      $rootScope.initallyLoaded = false;
+      //wait until the UI loads
+      $timeout(() => {
+        //hide the img text
+        $('#homePageImgText').addClass('opacityZero');
+        //set the inital navigation option
+        $('.navOptions[data="0"]').addClass('active');
+        //show the img text on the home page
+        $timeout(() => {
+          $('#homePageImgText').removeClass('opacityZero');
+          $('#homePageImg img').removeClass('zoomed');
+          $timeout(() => {
+            $('#footer').removeClass('hideFooter');
+          }, 2000)
+        }, 2000);
+      })
+    }
   }
   this.switchViews = (view) => {
     const addClassTo = (view === 'smallGalleryViewBox') ? '.smallGalleryViewBox' : '.largeGalleryViewBox';
     const removeClassFrom = (view === 'smallGalleryViewBox') ? '.largeGalleryViewBox' : '.smallGalleryViewBox';
     $(removeClassFrom).removeClass('activeView');
     $(addClassTo).addClass('activeView');
+  }
+  this.findCartItemIndex = (cartItem) => {
+    let index;
+    $rootScope.cart.map((data, i) => {
+      if(cartItem.id === data.id){
+        index = i;
+      }
+    })
+    return index;
+  }
+  this.nextAboutStory = () => {
+    
   }
 });
 

@@ -51,3 +51,31 @@
 .productBtns div:hover {
   background-color: var(--redFade);
 }
+
+#homePageImg {
+  perspective: 90em;
+}
+
+#homePageImg img {
+  transition: transform 1s;
+}
+
+#homePageImgText {
+  transition: opacity 2.6s;
+}
+
+.zoomed {
+  transform: scale(1.2);
+}
+
+#footer {
+  transition: bottom 0.5s;
+}
+
+#footer.hideFooter {
+  bottom: -4vh;
+}
+
+#aboutNextBtn:active > p {
+  color: #fff;
+}

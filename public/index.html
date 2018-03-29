@@ -48,7 +48,7 @@
               <p id="descriptionDescription"></p>
             </div>
             <div id="descriptionBottom" class="fullWidth flexCol">
-              <div id="descriptionBuyBtn" class="flexCol fullWidth descriptionBtn" ng-click='addToCartFromProductView()'>
+              <div id="descriptionBuyBtn" class="flexCol fullWidth descriptionBtn pointer" ng-click='addToCartFromProductView()'>
                 <p>ADD TO CART</p>
               </div>
             </div>
@@ -63,9 +63,15 @@
           <p data={{$index}} data-page={{navOption}} class="navOptions pointer" ng-repeat='navOption in navOptions track by $index' ng-click='navigateTo(navOption, $index)'>{{navOption}}</p>
         </div>
         <div id="navRightSide" class="flexRow">
-          <i class="fas fa-search pointer"></i>
-          <i class="fas fa-user-circle pointer"></i>
-          <i id="cartIcon" class="fas fa-shopping-bag pointer"></i>
+          <div class="">
+            <i class="fas fa-search pointer"></i>
+          </div>
+          <div class="">
+            <i class="fas fa-user-circle pointer"></i>
+          </div>
+          <div class="" ng-click='navigateTo("CART", 5)'>
+            <i id="cartIcon" class="fas fa-shopping-bag pointer"></i>
+          </div>
           <p id="cartQuantity" class="flexRow">{{cartQuantity}}</p>
         </div>
       </div>
@@ -74,7 +80,7 @@
       <!-- HOME -->
       <div id="homePage" class="page"  ng-if='currentPage === "HOME"'>
         <div id="homePageImg" class="fullWidth h80 flexRow">
-          <img src="./img/beautiful-1851260.jpg" alt="">
+          <img src="./img/beautiful-1851260.jpg" alt="" class="zoomed">
           <div id="homePageImgText" class="">
             <p>#CONFIDENT</p>
           </div>
@@ -86,8 +92,21 @@
 
       <!--        ABOUT PAGE      -->
       <!-- ABOUT -->
-      <div id="aboutPage" class=""  ng-if='currentPage === "ABOUT"'>
-        about
+      <div id="aboutPage" class="page flexCol"  ng-if='currentPage === "ABOUT"'>
+        <div id="aboutPageTop" class="fullWidth h30 flexRow">
+          <p class="w60">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+          <div id="aboutNextBtn" class="flexRow pointer" ng-click='nextAboutStory()'>
+            <p><i class="fas fa-sort-down"></i></p>
+          </div>
+        </div>
+        <div id="aboutPageBottom" class="fullWidth h70 none">
+          <div class="">
+
+          </div>
+          <div class="">
+            <!-- <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p> -->
+          </div>
+        </div>
       </div>
 
       <!--        SHOP PAGE         -->
@@ -124,10 +143,10 @@
             </div>
             <div data={{$index}} class="innerImg fullHeight fullWidth" style="background-image: url('{{product.img}}')"></div>
             <div class="productBtns fullWidth fullHeight">
-              <div class="addToCartBtn fullWidth h50 flexRow" ng-click='addToCartFromGallery($index)'>
+              <div class="addToCartBtn fullWidth h50 flexRow pointer" ng-click='addToCartFromGallery($index)'>
                 <p>ADD TO CART</p>
               </div>
-              <div class="viewGalleryBtn fullWidth h50 flexRow" ng-click='toggleProductGallery($index)'>
+              <div class="viewGalleryBtn fullWidth h50 flexRow pointer" ng-click='toggleProductGallery($index)'>
                 <p>VIEW GALLERY</p>
               </div>
             </div>
@@ -158,9 +177,31 @@
 
       <!--        CART PAGE      -->
       <!-- CART -->
-      <div id="cartPage" class=""  ng-if='currentPage === "CART"'>
+      <div id="cartPage" class="flexRow fullHeight fullWidth"  ng-if='currentPage === "CART"'>
+        <div id="checkoutReview" class="fullHeight w40">
+          <div data={{$index}} class="cartItem flexRow" ng-repeat='cartItem in cart track by $index'>
+            <div class="fullHeight w40">
+              <img src={{cartItem.img}} alt="" class="fullHeight">
+            </div>
+            <div class="flexCol w40">
+              <p class="cartName">{{cartItem.name}}</p>
+              <p class="cartPrice">{{cartItem.price}}</p>
+            </div>
+            <div class="quantityBtns flexCol w20">
+              <div class="plus flexRow pointer" ng-click="increment(cartItem)">
+                <p><i class="fas fa-plus"></i></p>
+              </div>
+              <div class="quantity flexCol">
+                <p>{{cartItem.quantity}}</p>
+              </div>
+              <div class="minus flexRow pointer" ng-click="decrement(cartItem)">
+                <p><i class="fas fa-minus"></i></p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <div id="payForm" class="">
+        <div id="payForm" class="fullHeight w50">
 
           <div class="cell example example5">
             <form action="/charge" method="post">
@@ -214,7 +255,7 @@
                     <div id="example5-card" class="input"></div>
                   </div>
                 </div>
-                <button type="submit" data-tid="elements_examples.form.pay_button">Pay $25</button>
+                <button type="submit" data-tid="elements_examples.form.pay_button">Pay {{cartPrice}}</button>
               </fieldset>
               <div class="error" role="alert"><svg class="none" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 17 17">
                   <path class="base" fill="#000" d="M8.5,17 C3.80557963,17 0,13.1944204 0,8.5 C0,3.80557963 3.80557963,0 8.5,0 C13.1944204,0 17,3.80557963 17,8.5 C17,13.1944204 13.1944204,17 8.5,17 Z"></path>
@@ -244,7 +285,7 @@
       </div>
 
       <!-- FOOTER -->
-      <div id="footer" class="flexRow">
+      <div id="footer" class="flexRow hideFooter">
         <a href="#"><i class="fab fa-facebook pointer"></i></a>
         <a href="#"><i class="fab fa-snapchat-square pointer"></i></a>
         <a href="#"><i class="fab fa-twitter-square pointer"></i></a>

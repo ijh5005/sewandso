@@ -45,6 +45,10 @@ body {
   display: none;
 }
 
+.opacityZero {
+  opacity: 0;
+}
+
 .h95 {
   height: 95%;
 }

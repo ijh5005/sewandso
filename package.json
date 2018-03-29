@@ -22,7 +22,7 @@
     "morgan": "~1.8.1",
     "nodemailer": "^4.3.1",
     "nodemailer-juice": "^1.0.0",
-    "nodemon": "^1.14.3",
+    "nodemon": "^1.17.2",
     "serve-favicon": "~2.4.2",
     "stripe": "^5.4.0",
     "twilio": "^3.9.2"
