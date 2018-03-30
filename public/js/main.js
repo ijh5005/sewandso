@@ -12,6 +12,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'animat
   $rootScope.cartPrice = 0;
   $rootScope.navigating = true;
   $rootScope.initallyLoaded = true;
+  $rootScope.cartEmpty = true;
 
   //SCOPE VARIABLES
   $scope.products = data.products;
@@ -212,6 +213,7 @@ app.service('task', function($rootScope, $interval, $timeout){
   }
   this.calculateCartQuantity = () => {
     let quantity = 0;
+    $rootScope.cartEmpty = ($rootScope.cart.length === 0);
     $rootScope.cart.map((product) => {
       quantity += parseInt(product.quantity);
     })
@@ -261,7 +263,14 @@ app.service('task', function($rootScope, $interval, $timeout){
     return index;
   }
   this.nextAboutStory = () => {
-    
+    $('#aboutPageTop').addClass('aboutDown');
+    $('#aboutNextBtn').addClass('rotate180');
+    $('#aboutPageBottom').hide();
+    $timeout(() => {
+      $('#aboutPageTop').removeClass('aboutDown');
+      $('#aboutNextBtn').removeClass('rotate180');
+      $('#aboutPageBottom').fadeIn();
+    }, 1000);
   }
 });
 

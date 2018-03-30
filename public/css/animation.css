@@ -79,3 +79,11 @@
 #aboutNextBtn:active > p {
   color: #fff;
 }
+
+.aboutDown {
+  height: 90%;
+}
+
+.rotate180 {
+  transform: rotateZ(180deg);
+}

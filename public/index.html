@@ -94,17 +94,21 @@
       <!-- ABOUT -->
       <div id="aboutPage" class="page flexCol"  ng-if='currentPage === "ABOUT"'>
         <div id="aboutPageTop" class="fullWidth h30 flexRow">
-          <p class="w60">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+          <div class="flexRow">
+            <i class="fas fa-quote-left quote"></i>
+            <p class="w60">Self discovery is the end product of a great challenge mastered when the mind commands the body to do the seemingly impossible when strength and courage are summoned for extraordinary limits for the sake of something outside itself.</p>
+            <i class="fas fa-quote-right quote"></i>
+          </div>
           <div id="aboutNextBtn" class="flexRow pointer" ng-click='nextAboutStory()'>
             <p><i class="fas fa-sort-down"></i></p>
           </div>
         </div>
-        <div id="aboutPageBottom" class="fullWidth h70 none">
-          <div class="">
+        <div id="aboutPageBottom" class="fullWidth flexRow">
+          <div id="aboutImg" class="">
 
           </div>
-          <div class="">
-            <!-- <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p> -->
+          <div id="aboutText" class="flexRow">
+            <p class="w90">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat.</p>
           </div>
         </div>
       </div>
@@ -178,7 +182,7 @@
       <!--        CART PAGE      -->
       <!-- CART -->
       <div id="cartPage" class="flexRow fullHeight fullWidth"  ng-if='currentPage === "CART"'>
-        <div id="checkoutReview" class="fullHeight w40">
+        <div id="checkoutReview" class="fullHeight w40" ng-if='!cartEmpty'>
           <div data={{$index}} class="cartItem flexRow" ng-repeat='cartItem in cart track by $index'>
             <div class="fullHeight w40">
               <img src={{cartItem.img}} alt="" class="fullHeight">
@@ -201,7 +205,7 @@
           </div>
         </div>
 
-        <div id="payForm" class="fullHeight w50">
+        <div id="payForm" class="fullHeight w50" ng-if='!cartEmpty'>
 
           <div class="cell example example5">
             <form action="/charge" method="post">
@@ -282,6 +286,9 @@
 
         </div>
 
+        <div id="cartEmpty" class="flexCol" ng-if='cartEmpty'>
+          <p>Your Cart Is Empty</p>
+        </div>
       </div>
 
       <!-- FOOTER -->
